@@ -28,13 +28,13 @@ public class ExampleController implements BaseController {
 
     @PostMapping(EXAMPLE_URL)
     @ResponseStatus(HttpStatus.OK)
-    public ExampleResponse updateShipment(@RequestBody @Valid ExampleRequest request) {
+    public ExampleResponse examplePost(@RequestBody @Valid ExampleRequest request) {
         return exampleService.examplePost(request);
     }
 
     @GetMapping(EXAMPLE_URL)
     @ResponseStatus(HttpStatus.OK)
-    public ExampleResponse updateShipment() {
+    public ExampleResponse exampleGet() {
         return exampleService.exampleGet();
     }
 

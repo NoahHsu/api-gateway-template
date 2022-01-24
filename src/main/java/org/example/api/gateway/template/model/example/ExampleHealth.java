@@ -14,4 +14,11 @@ public class ExampleHealth {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "ExampleHealth{" +
+                "status='" + status + '\'' +
+                '}';
+    }
 }

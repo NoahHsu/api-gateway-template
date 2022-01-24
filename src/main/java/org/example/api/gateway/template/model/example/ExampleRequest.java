@@ -20,4 +20,11 @@ public class ExampleRequest {
     public void setInput(String input) {
         this.input = input;
     }
+
+    @Override
+    public String toString() {
+        return "ExampleRequest{" +
+                "input='" + input + '\'' +
+                '}';
+    }
 }
