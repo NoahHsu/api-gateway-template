@@ -1,0 +1,10 @@
+app:
+  endpoint:
+    example: http://localhost:8080
+
+apiClient:
+  timeout: 30
+
+server.error.whitelabel.enabled: false
+springdoc.swagger-ui.enabled: true
+spring.http.converters.preferred-json-mapper=gson:

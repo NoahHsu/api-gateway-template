@@ -1,0 +1,105 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.6.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "com.google.cloud.tools.jib" version "3.2.0"
+    id 'pl.allegro.tech.build.axion-release' version '1.10.1'
+    id 'idea'
+    id 'jacoco'
+    id 'net.ltgt.errorprone' version '2.0.2'
+}
+
+group 'org.example.api.gateway.template'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_17
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // spring doc
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.5.9'
+
+    // log
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.0.1'
+    // update dependency in logstash
+    implementation 'ch.qos.logback:logback-classic:1.2.10'
+    implementation 'ch.qos.logback:logback-core:1.2.10'
+
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.3'
+    testImplementation 'com.squareup.retrofit2:retrofit-mock:2.9.0'
+
+    // Mapstruct
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+
+    // Metrics
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-core:1.8.2'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.8.2'
+
+    // Apache common
+    implementation 'commons-codec:commons-codec:1.15'
+    implementation 'commons-validator:commons-validator:1.7'
+
+
+    // Unit Test
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.assertj:assertj-core:3.22.0'
+
+    // ErrorProne
+    errorprone 'com.google.errorprone:error_prone_core:2.10.0'
+    implementation 'com.google.errorprone:error_prone_annotations:2.10.0'
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+jacoco {
+    toolVersion = "0.8.7"
+}
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.enabled true
+        html.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.html")
+        xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['org/example/api/gateway/template/Application.class',
+                                        ])
+        }))
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:all" << "-Xlint:-serial" << "-Xlint:-processing"
+    options.errorprone {
+        disableWarningsInGeneratedCode = true
+        excludedPaths = ".*/build/.*"
+    }
+    options.errorprone.errorproneArgs.addAll(
+            "-Xlint:unchecked",
+            // warning level
+            "-Xep:SameNameButDifferent:OFF",
+            "-Xep:MissingSummary:OFF",
+            "-Xep:UnusedVariable:OFF", // encounter java.lang.IndexOutOfBoundsException as a bug of this package
+    )
+}

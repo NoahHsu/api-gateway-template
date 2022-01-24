@@ -1,1 +1,1 @@
-# api-gateway-template
+# API Gateway template
